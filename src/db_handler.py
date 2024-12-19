@@ -13,60 +13,150 @@ class OpenAQDatabaseHandler:
         self.db_params = db_params
 
     def init_db(self):
-        """Create the necessary tables if they don't exist"""
-        create_tables_query = """
-        --- Raw locations table
-        CREATE TABLE IF NOT EXISTS raw_locations (
-            id INTEGER PRIMARY KEY,
-            name VARCHAR(255),
-            country_code VARCHAR(2),
-            country_name VARCHAR(255),
-            city VARCHAR(255),
-            coordinates JSONB,
-            timezone VARCHAR(100),
-            owner_name VARCHAR(255),
-            provider_name VARCHAR(255),
-            is_mobile BOOLEAN,
-            is_monitor BOOLEAN,
-            source_data JSONB,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-        
-        -- Raw sensors table
-        CREATE TABLE IF NOT EXISTS raw_sensors (
-            id INTEGER PRIMARY KEY,
-            location_id INTEGER REFERENCES raw_locations(id),
-            name VARCHAR(255),
-            parameter_name VARCHAR(100),
-            parameter_display_name VARCHAR(100),
-            units VARCHAR(50),
-            source_data JSONB,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-        
-        -- Raw measurements table
-        CREATE TABLE IF NOT EXISTS raw_measurements (
-            id SERIAL PRIMARY KEY,
-            location_id INTEGER REFERENCES raw_locations(id),
-            sensor_id INTEGER REFERENCES raw_sensors(id),
-            value FLOAT,
-            datetime TIMESTAMP,
-            coordinates JSONB,
-            source_data JSONB,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-        """
+            """Create the necessary tables if they don't exist"""
+            create_tables_query = """
+            --- Raw locations table
+            CREATE TABLE IF NOT EXISTS raw_locations (
+                id INTEGER PRIMARY KEY,
+                name VARCHAR(255),
+                country_code VARCHAR(2),
+                country_name VARCHAR(255),
+                city VARCHAR(255),
+                coordinates JSONB,
+                timezone VARCHAR(100),
+                owner_name VARCHAR(255),
+                provider_name VARCHAR(255),
+                is_mobile BOOLEAN,
+                is_monitor BOOLEAN,
+                source_data JSONB,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
 
-        try:
-            logger.info(f"Database parameters: {self.db_params}")
-            with psycopg2.connect(**self.db_params) as conn:
-                with conn.cursor() as cur:
-                    cur.execute(create_tables_query)
-                conn.commit()
-                logger.info("Database tables created successfully")
-        except Exception as e:
-            logger.error(f"Error creating database tables: {str(e)}")
-            raise
+            -- Raw sensors table
+            CREATE TABLE IF NOT EXISTS raw_sensors (
+                id INTEGER PRIMARY KEY,
+                location_id INTEGER REFERENCES raw_locations(id),
+                name VARCHAR(255),
+                parameter_name VARCHAR(100),
+                parameter_display_name VARCHAR(100),
+                units VARCHAR(50),
+                source_data JSONB,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
+            -- Raw measurements table
+            CREATE TABLE IF NOT EXISTS raw_measurements (
+                id SERIAL PRIMARY KEY,
+                location_id INTEGER REFERENCES raw_locations(id),
+                sensor_id INTEGER REFERENCES raw_sensors(id),
+                value FLOAT,
+                datetime TIMESTAMP,
+                coordinates JSONB,
+                source_data JSONB,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            """
+
+            print("\nAttempting to initialize database...")
+            try:
+                with psycopg2.connect(**self.db_params) as conn:
+                    print(f"Connected to database: {self.db_params['dbname']}")
+                    print(f"Using port: {self.db_params['port']}")
+
+                    with conn.cursor() as cur:
+                        print("Creating tables...")
+                        cur.execute(create_tables_query)
+                        conn.commit()
+                        print("Tables created and committed")
+
+                        # Verify tables
+                        cur.execute("""
+                            SELECT table_name 
+                            FROM information_schema.tables 
+                        """)
+                        tables = cur.fetchall()
+                        print("Existing tables:", [table[0] for table in tables])
+
+                        # Verify we can query the tables
+                        for table in ['raw_locations', 'raw_sensors', 'raw_measurements']:
+                            try:
+                                cur.execute(f"SELECT COUNT(*) FROM {table}")
+                                count = cur.fetchone()[0]
+                                print(f"Table {table} exists and has {count} records")
+                            except Exception as e:
+                                print(f"Error querying {table}: {str(e)}")
+
+            except Exception as e:
+                print(f"Error initializing database: {str(e)}")
+                raise
+    # def init_db(self):
+    #     """Create the necessary tables if they don't exist"""
+    #     create_tables_query = """
+    #     --- Raw locations table
+    #     CREATE TABLE IF NOT EXISTS raw_locations (
+    #         id INTEGER PRIMARY KEY,
+    #         name VARCHAR(255),
+    #         country_code VARCHAR(2),
+    #         country_name VARCHAR(255),
+    #         city VARCHAR(255),
+    #         coordinates JSONB,
+    #         timezone VARCHAR(100),
+    #         owner_name VARCHAR(255),
+    #         provider_name VARCHAR(255),
+    #         is_mobile BOOLEAN,
+    #         is_monitor BOOLEAN,
+    #         source_data JSONB,
+    #         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    #     );
+    #
+    #     -- Raw sensors table
+    #     CREATE TABLE IF NOT EXISTS raw_sensors (
+    #         id INTEGER PRIMARY KEY,
+    #         location_id INTEGER REFERENCES raw_locations(id),
+    #         name VARCHAR(255),
+    #         parameter_name VARCHAR(100),
+    #         parameter_display_name VARCHAR(100),
+    #         units VARCHAR(50),
+    #         source_data JSONB,
+    #         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    #     );
+    #
+    #     -- Raw measurements table
+    #     CREATE TABLE IF NOT EXISTS raw_measurements (
+    #         id SERIAL PRIMARY KEY,
+    #         location_id INTEGER REFERENCES raw_locations(id),
+    #         sensor_id INTEGER REFERENCES raw_sensors(id),
+    #         value FLOAT,
+    #         datetime TIMESTAMP,
+    #         coordinates JSONB,
+    #         source_data JSONB,
+    #         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    #     );
+    #     """
+    #
+    #     try:
+    #         logger.info(f"Database parameters: {self.db_params}")
+    #         with psycopg2.connect(**self.db_params) as conn:
+    #             with conn.cursor() as cur:
+    #                 cur.execute(create_tables_query)
+    #             conn.commit()
+    #             logger.info("Database tables created successfully")
+    #
+    #         ###########################
+    #         # Verify tables were created
+    #         with conn.cursor() as cur:
+    #             cur.execute("""
+    #                 SELECT table_name
+    #                 FROM information_schema.tables
+    #                 WHERE table_schema = 'public'
+    #             """)
+    #             tables = cur.fetchall()
+    #             print("Created tables:", [table[0] for table in tables])
+    #         ###########################
+    #
+    #     except Exception as e:
+    #         logger.error(f"Error creating database tables: {str(e)}")
+    #         raise
 
     def store_location(self, location: Dict):
         """Store a location in the database"""

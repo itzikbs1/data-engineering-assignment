@@ -1,2 +1,4 @@
-psycopg2-binary==2.9.9  # For PostgreSQL database connection
-requests==2.31.0        # For making API calls
+psycopg2-binary==2.9.9
+requests==2.31.0
+apscheduler
+pydantic

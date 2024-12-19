@@ -1,9 +1,8 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:latest
-    container_name: my_postgres_db
+    container_name: openaq_postgres
+    hostname: postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: abL148#N
@@ -12,7 +11,76 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
+    networks:
+      - openaq_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  scheduled_service:
+    build:
+      context: .
+    image: openaq_service:latest
+    container_name: openaq_service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_NAME: openaq_db
+      DB_USER: postgres
+      DB_PASSWORD: abL148#N
+      DB_HOST: postgres
+      DB_PORT: 5432
+    networks:
+      - openaq_network
+
+networks:
+  openaq_network:
 
 volumes:
   postgres_data:
+
+#version: "3.8"
+#
+#services:
+#  postgres:
+#    image: postgres:latest
+#    container_name: openaq_postgres
+#    hostname: postgres
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: abL148#N
+#      POSTGRES_DB: openaq_db
+#    ports:
+#      - "5433:5432"
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#      - ./init-scripts:/docker-entrypoint-initdb.d # Add this line for initialization
+#    networks:
+#      - openaq_network
+#
+#  scheduled_service:
+#    build:
+#      context: .
+#    image: openaq_service:latest
+#    container_name: openaq_service
+#    depends_on:
+#      - postgres
+#    environment:
+#      DB_NAME: openaq_db
+#      DB_USER: postgres
+#      DB_PASSWORD: abL148#N
+#      DB_HOST: postgres
+#      DB_PORT: 5432
+#    volumes:
+#      - .:/app
+#    networks:
+#      - openaq_network
+#
+#networks:
+#  openaq_network:
+#
+#volumes:
+#  postgres_data:

@@ -58,14 +58,14 @@ class OpenAQFetcher:
         delay_between_requests = 1
 
         while True:
-            print(f"fetching page {page}...")
+            # print(f"fetching page {page}...")
             data = self.fetch_locations_page(page, limit)
 
             if not data or 'results' not in data:
                 break
 
             locations_of_page = data['results']
-            print(f"locations_of_page: {len(locations_of_page)}")
+            # print(f"locations_of_page: {len(locations_of_page)}")
             if not locations_of_page:
                 break
             all_locations.extend(locations_of_page)
@@ -81,7 +81,7 @@ class OpenAQFetcher:
     def is_location_active(self, location: Dict) -> bool:
         """Check if location has recent data (within last 48 hours)"""
 
-        print(f"line 77, location: {location}")
+        # print(f"line 77, location: {location}")
 
         if not location.get('datetimeLast'):
             return False
@@ -158,17 +158,17 @@ class OpenAQFetcher:
         locations_with_data = 0  # Counter for locations with measurements
 
         for idx, location in enumerate(active_locations, 1):
-            print(f"\nFetching measurements for location {idx}/{total}: {location['name']}")
-            print(f"Last update: {location['datetimeLast']['utc']}")
+            # print(f"\nFetching measurements for location {idx}/{total}: {location['name']}")
+            # print(f"Last update: {location['datetimeLast']['utc']}")
 
             measurements = self.fetch_latest_measurements(location['id'])
             if measurements and 'results' in measurements and measurements['results']:
                 location['latest_measurements'] = measurements['results']
                 locations_with_data += 1
-                print(f"Found {len(measurements['results'])} recent measurements")
+                # print(f"Found {len(measurements['results'])} recent measurements")
             else:
                 location['latest_measurements'] = None
-                print("No recent measurements found")
+                # print("No recent measurements found")
 
             locations_with_measurements.append(location)
             time.sleep(1)  # Delay to avoid rate limits
@@ -176,8 +176,8 @@ class OpenAQFetcher:
             # Print progress every 10 locations
             if idx % 10 == 0:
                 print(f"\nProgress: {idx}/{total} locations processed")
-                print(f"Locations with recent data: {locations_with_data}")
-                print("------------------------\n")
+                # print(f"Locations with recent data: {locations_with_data}")
+                # print("------------------------\n")
 
         print(f"\nFinal Summary:")
         print(f"Total active locations processed: {total}")

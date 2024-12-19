@@ -65,4 +65,3 @@ erDiagram
     RIDERS ||--o{ PAYMENT_METHODS : has
     ORDERS ||--|| RIDES : fulfills
     PAYMENT_METHODS ||--o{ ORDERS : used_for
-```

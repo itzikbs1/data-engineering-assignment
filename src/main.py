@@ -17,7 +17,7 @@ def main():
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
     logger = logging.getLogger(__name__)
-    logger.info(f"Starting script with name: {__name__}")
+    # logger.info(f"Starting script with name: {__name__}")
 
     try:
         # Initialize database handler
@@ -33,7 +33,7 @@ def main():
 
         # Fetch data
         logger.info("Starting data collection...")
-        locations_data = fetcher.fetch_all_locations_with_measurements(max_locations=1000)
+        locations_data = fetcher.fetch_all_locations_with_measurements(max_locations=50)
 
         total_locations = len(locations_data)
         logger.info(f"Successfully fetched {total_locations} locations")
@@ -48,8 +48,8 @@ def main():
                 locations_processed += 1
 
                 if location.get('latest_measurements'):
-                    logger.info(
-                        f"Storing {len(location['latest_measurements'])} measurements for location: {location['name']}")
+                    # logger.info(
+                    #     f"Storing {len(location['latest_measurements'])} measurements for location: {location['name']}")
                     db_handler.store_measurements(location['latest_measurements'])
                     locations_with_measurements += 1
 
