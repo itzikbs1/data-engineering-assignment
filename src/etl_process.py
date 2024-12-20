@@ -2,7 +2,7 @@ import logging
 from .db import Database
 from .api import OpenAQClient
 from .db import DataWarehouseTransformer
-from config.config import get_db_params, get_api_config
+from .config import get_db_params, get_api_config
 
 
 class AirQualityETL:

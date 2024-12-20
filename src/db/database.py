@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
 from .connectionDB import ConnectionDB
-from config.config import TABLE_SCHEMAS
+from src.config import TABLE_SCHEMAS
 
 
 class Database(ConnectionDB):
