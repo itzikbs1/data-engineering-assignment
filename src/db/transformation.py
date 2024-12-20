@@ -2,7 +2,7 @@ from .connectionDB import ConnectionDB
 
 
 class DataWarehouseTransformer(ConnectionDB):
-    def create_dimension_tables(self):
+    def _create_dimension_tables(self):
         """Create dimension tables for the data warehouse"""
         dimension_queries = [
             """
@@ -45,17 +45,10 @@ class DataWarehouseTransformer(ConnectionDB):
             """
         ]
 
-        try:
-            for query in dimension_queries:
-                with self.conn.cursor() as cursor:
-                    cursor.execute(query)
-            self.conn.commit()
-            print("Dimension tables created successfully")
-        except Exception as e:
-            self.conn.rollback()
-            raise Exception(f"Error creating dimension tables: {str(e)}")
+        for query in dimension_queries:
+            self.execute_query(query)
 
-    def populate_dimension_tables(self):
+    def _populate_dimension_tables(self):
         """Populate dimension tables from raw data"""
         dimension_population_queries = [
             """
@@ -123,17 +116,10 @@ class DataWarehouseTransformer(ConnectionDB):
             """
         ]
 
-        try:
-            for query in dimension_population_queries:
-                with self.conn.cursor() as cursor:
-                    cursor.execute(query)
-            self.conn.commit()
-            print("Dimension tables populated successfully")
-        except Exception as e:
-            self.conn.rollback()
-            raise Exception(f"Error populating dimension tables: {str(e)}")
+        for query in dimension_population_queries:
+            self.execute_query(query)
 
-    def create_fact_table(self):
+    def _create_fact_table(self):
         """Create fact table for air quality measurements"""
         fact_table_query = """
         CREATE TABLE IF NOT EXISTS fact_air_quality (
@@ -153,16 +139,9 @@ class DataWarehouseTransformer(ConnectionDB):
         );
         """
 
-        try:
-            with self.conn.cursor() as cursor:
-                cursor.execute(fact_table_query)
-            self.conn.commit()
-            print("Fact table created successfully")
-        except Exception as e:
-            self.conn.rollback()
-            raise Exception(f"Error creating fact table: {str(e)}")
+        self.execute_query(fact_table_query)
 
-    def populate_fact_table(self):
+    def _populate_fact_table(self):
         """Populate fact table with aggregated measurements"""
         fact_population_query = """
         WITH measurements_with_keys AS (
@@ -226,23 +205,16 @@ class DataWarehouseTransformer(ConnectionDB):
         FROM aggregated_measurements;
         """
 
-        try:
-            with self.conn.cursor() as cursor:
-                cursor.execute(fact_population_query)
-            self.conn.commit()
-            print("Fact table populated successfully")
-        except Exception as e:
-            self.conn.rollback()
-            raise Exception(f"Error populating fact table: {str(e)}")
+        self.execute_query(fact_population_query)
 
     def run_transformation(self):
         """Execute full data warehouse transformation"""
         try:
             self.connect()
-            self.create_dimension_tables()
-            self.populate_dimension_tables()
-            self.create_fact_table()
-            self.populate_fact_table()
+            self._create_dimension_tables()
+            self._populate_dimension_tables()
+            self._create_fact_table()
+            self._populate_fact_table()
         except Exception as e:
             print(f"Transformation error: {str(e)}")
         finally:

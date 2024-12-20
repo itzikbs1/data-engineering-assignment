@@ -125,9 +125,10 @@ class Database(ConnectionDB):
         used_columns = list(columns_data.keys())
         values = [columns_data[col] for col in used_columns]
 
+        placeholders = ', '.join(['%s'] * len(used_columns))
+        columns_str = ', '.join(used_columns)
+
         if key_field:
-            placeholders = ', '.join(['%s'] * len(used_columns))
-            columns_str = ', '.join(used_columns)
             update_str = ', '.join(f"{field} = EXCLUDED.{field}" for field in update_fields)
 
             query = f"""
@@ -137,12 +138,6 @@ class Database(ConnectionDB):
                 {update_str}
             """
         else:
-            placeholders = ', '.join(['%s'] * len(used_columns))
-            columns_str = ', '.join(used_columns)
-            #
-            # print(f"table_name: {table_name}")
-            # print(f"columns_str: {columns_str}")
-            # print(f"placeholders: {placeholders}")
             query = f"""
                 INSERT INTO {table_name} ({columns_str})
                 VALUES ({placeholders})

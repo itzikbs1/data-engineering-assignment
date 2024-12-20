@@ -3,7 +3,8 @@ from typing import Dict
 from dotenv import load_dotenv
 
 # Load environment variables from root directory
-load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
+env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
+load_dotenv(env_path)
 
 
 def get_db_params() -> Dict[str, str]:

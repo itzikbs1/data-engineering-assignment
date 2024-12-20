@@ -31,7 +31,7 @@ class AirQualityETL:
         try:
             # Step 1: Extract and load raw data
             self.logger.info("Starting raw data extraction and loading...")
-            self.extract_and_load_raw_data()
+            self._extract_and_load_raw_data()
 
             # Step 2: Transform to data warehouse
             self.logger.info("Starting data warehouse transformation...")
@@ -42,7 +42,7 @@ class AirQualityETL:
         except Exception as e:
             self.logger.error(f"Error during ETL process: {str(e)}")
 
-    def extract_and_load_raw_data(self) -> None:
+    def _extract_and_load_raw_data(self) -> None:
         """Extract data from API and load into raw tables"""
         try:
             self.raw_db.connect()

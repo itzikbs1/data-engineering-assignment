@@ -77,10 +77,9 @@ class OpenAQClient:
                 results = data['results']
                 all_results.extend(results)
 
-                if len(results) < self.limit or page > 100: #or page * self.limit >= int(
-                        #str(data['meta'].get('found', '0')).replace('>', '')):
+                if len(results) < self.limit or page > 200:  # or page * self.limit >= int(
+                    # str(data['meta'].get('found', '0')).replace('>', '')):
                     break
-
 
                 page += 1
                 time.sleep(self.delay)
