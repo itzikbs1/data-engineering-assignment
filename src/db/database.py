@@ -4,6 +4,12 @@ from src.config import TABLE_SCHEMAS
 
 
 class Database(ConnectionDB):
+
+    def __init__(self, db_params):
+        super().__init__(db_params)
+
+        self._valid_location_ids = set()
+
     def initialize_tables(self) -> None:
         """Initialize raw data tables"""
         queries = [
@@ -102,6 +108,14 @@ class Database(ConnectionDB):
         schema = TABLE_SCHEMAS[schema_key]
 
         for data in data_list:
+
+            if schema_key == 'locations':
+                self._valid_location_ids.add(data['id'])
+
+            if schema_key == 'measurements':
+                if data['locationId'] not in self._valid_location_ids:
+                    continue
+
             try:
                 processed_data = self._process_data(schema_key, data)
                 if additional_data:
