@@ -43,7 +43,7 @@ Implementation of an ETL process using Python and Docker, focusing on air qualit
 1. Clone the repository
     git clone https://github.com/itzikbs1/data-engineering-assignment
 2. Navigate to the project directory
-    cd [project-name]
+    cd data-engineering-assignment
 3. Start the containers:
    - `docker-compose build --no-cache`
    - `docker-compose up`
