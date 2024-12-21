@@ -10,7 +10,7 @@ class DataWarehouseTransformer(ConnectionDB):
                 location_key SERIAL PRIMARY KEY,
                 original_location_id INTEGER UNIQUE,
                 location_name VARCHAR(100),
-                city VARCHAR(100),
+                city VARCHAR(255),
                 country VARCHAR(50),
                 latitude DECIMAL(9,6),
                 longitude DECIMAL(9,6),
@@ -136,7 +136,7 @@ class DataWarehouseTransformer(ConnectionDB):
         self.execute_query(fact_table_query)
 
     def _populate_fact_table(self):
-        """Populate fact table with aggregated measurements"""
+        """Populate fact table with measurements_with_keys"""
         fact_population_query = """
         WITH measurements_with_keys AS (
             SELECT 
@@ -150,6 +150,7 @@ class DataWarehouseTransformer(ConnectionDB):
             JOIN dim_locations l ON m.location_id = l.original_location_id
             JOIN dim_parameters p ON m.parameter = p.parameter_name
             JOIN dim_time t ON DATE(m.timestamp_utc) = t.date
+                AND EXTRACT(HOUR FROM m.timestamp_utc) = t.hour
         )
         INSERT INTO fact_air_quality (
             location_key,

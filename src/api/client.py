@@ -5,9 +5,11 @@ import logging
 from requests.exceptions import RequestException
 
 
+import json
+
 class OpenAQClient:
     def __init__(self, base_url: str, api_key: str, limit: int = 100, delay: int = 1,
-                 max_retries: int = 5, initial_retry_delay: int = 5):
+                 max_retries: int = 7, initial_retry_delay: int = 5):
         self.base_url = base_url
         self.headers = {
             'X-API-Key': api_key,
@@ -75,10 +77,10 @@ class OpenAQClient:
             try:
                 data = self._make_request(f"{self.base_url}/{endpoint}", request_params)
                 results = data['results']
+
                 all_results.extend(results)
 
-                if len(results) < self.limit or page > 100:  # or page * self.limit >= int(
-                    # str(data['meta'].get('found', '0')).replace('>', '')):
+                if len(results) < self.limit or page > 10:
                     break
 
                 page += 1

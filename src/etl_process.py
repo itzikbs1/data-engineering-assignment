@@ -29,11 +29,9 @@ class AirQualityETL:
     def run(self) -> None:
         """Main ETL process"""
         try:
-            # Step 1: Extract and load raw data
             self.logger.info("Starting raw data extraction and loading...")
             self._extract_and_load_raw_data()
 
-            # Step 2: Transform to data warehouse
             self.logger.info("Starting data warehouse transformation...")
             self.transformer.run_transformation()
 
@@ -48,29 +46,28 @@ class AirQualityETL:
             self.raw_db.connect()
             self.raw_db.initialize_tables()
 
-            # 1. Extract and load parameters
             self.logger.info("Fetching parameters...")
             parameters_data = self.api.generic_get('parameters')
             if parameters_data:
                 self.raw_db.generic_insert('parameters', parameters_data)
-                self.logger.info(f"Loaded {len(parameters_data)} parameters")
 
-            # 2. Extract and load locations
             self.logger.info("Fetching locations...")
             locations_data = self.api.generic_get('locations')
             if locations_data:
                 self.raw_db.generic_insert('locations', locations_data)
-                self.logger.info(f"Loaded {len(locations_data)} locations")
 
-            # 3. Extract and load measurements
             self.logger.info("Fetching measurements...")
             measurements_data = self.api.generic_get('measurements')
             if measurements_data:
                 self.raw_db.generic_insert('measurements', measurements_data)
-                self.logger.info(f"Loaded {len(measurements_data)} measurements")
 
         except Exception as e:
             self.logger.error(f"Error in extract and load process: {str(e)}")
             raise
         finally:
             self.raw_db.close()
+
+
+if __name__ == '__main__':
+    aq = AirQualityETL()
+    aq.run()
