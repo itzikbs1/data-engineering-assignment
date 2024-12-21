@@ -7,7 +7,6 @@ class Database(ConnectionDB):
 
     def __init__(self, db_params):
         super().__init__(db_params)
-
         self._valid_location_ids = set()
 
     def initialize_tables(self) -> None:
@@ -26,7 +25,7 @@ class Database(ConnectionDB):
             CREATE TABLE IF NOT EXISTS locations (
                 location_id INTEGER PRIMARY KEY,
                 name VARCHAR(100),
-                city VARCHAR(100),
+                city VARCHAR(255),
                 country VARCHAR(50),
                 latitude DECIMAL(9,6),
                 longitude DECIMAL(9,6),
@@ -50,7 +49,7 @@ class Database(ConnectionDB):
                 latitude DECIMAL(9,6),
                 longitude DECIMAL(9,6),
                 country VARCHAR(2),
-                city VARCHAR(100)
+                city VARCHAR(255)
             );
             """
         ]
@@ -86,7 +85,6 @@ class Database(ConnectionDB):
                 }
             elif schema_key == 'measurements':
                 return {
-                    # 'measurement_id': data['id'],
                     'location_id': data['locationId'],
                     'parameter': data['parameter'],
                     'value': data['value'],
@@ -135,11 +133,19 @@ class Database(ConnectionDB):
         key_field = schema['key_field']
         update_fields = schema['update_fields']
 
-        columns_data = {k: v for k, v in data.items() if k in columns}
+        columns_data = {}
+        for k, v in data.items():
+            if k in columns:
+                columns_data[k] = v
+
         used_columns = list(columns_data.keys())
-        values = [columns_data[col] for col in used_columns]
+
+        values = []
+        for col in used_columns:
+            values.append(columns_data[col])
 
         placeholders = ', '.join(['%s'] * len(used_columns))
+
         columns_str = ', '.join(used_columns)
 
         if key_field:
