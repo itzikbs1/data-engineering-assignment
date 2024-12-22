@@ -7,15 +7,12 @@ from .config import get_db_params, get_api_config
 
 class AirQualityETL:
     def __init__(self):
-        # Set up logging
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
 
-        # Get configuration
         self.db_params = get_db_params()
         self.api_config = get_api_config()
 
-        # Initialize components
         self.raw_db = Database(self.db_params)
         self.api = OpenAQClient(
             base_url=self.api_config['BASE_URL'],
@@ -67,7 +64,3 @@ class AirQualityETL:
         finally:
             self.raw_db.close()
 
-
-if __name__ == '__main__':
-    aq = AirQualityETL()
-    aq.run()

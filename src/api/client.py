@@ -5,8 +5,6 @@ import logging
 from requests.exceptions import RequestException
 
 
-import json
-
 class OpenAQClient:
     def __init__(self, base_url: str, api_key: str, limit: int = 100, delay: int = 1,
                  max_retries: int = 7, initial_retry_delay: int = 5):
@@ -80,7 +78,7 @@ class OpenAQClient:
 
                 all_results.extend(results)
 
-                if len(results) < self.limit or page > 10:
+                if len(results) < self.limit or page > 30:
                     break
 
                 page += 1

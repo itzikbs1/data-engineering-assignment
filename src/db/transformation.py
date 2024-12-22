@@ -109,7 +109,6 @@ class DataWarehouseTransformer(ConnectionDB):
             WHERE NOT EXISTS (
                 SELECT 1 FROM dim_time dt
                 WHERE dt.date = DATE(measurements.timestamp_utc)
-                AND dt.hour = EXTRACT(HOUR FROM measurements.timestamp_utc)
             );
             """
         ]

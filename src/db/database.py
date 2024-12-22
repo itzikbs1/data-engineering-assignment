@@ -111,6 +111,7 @@ class Database(ConnectionDB):
                 self._valid_location_ids.add(data['id'])
 
             if schema_key == 'measurements':
+
                 if data['locationId'] not in self._valid_location_ids:
                     continue
 

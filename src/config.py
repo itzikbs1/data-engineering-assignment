@@ -25,16 +25,15 @@ def get_api_config() -> Dict[str, any]:
     }
 
 
-# Updated schema definitions based on OpenAQ API v2
 TABLE_SCHEMAS = {
     'parameters': {
         'table_name': 'parameters',
         'columns': [
-            'parameter_id',  # from 'id' in /parameters
-            'name',  # e.g., 'pm25', 'pm10'
-            'display_name',  # e.g., 'PM2.5', 'PM10'
-            'description',  # full text description
-            'preferred_unit'  # e.g., 'µg/m³'
+            'parameter_id',
+            'name',
+            'display_name',
+            'description',
+            'preferred_unit'
         ],
         'key_field': 'parameter_id',
         'update_fields': ['name', 'display_name', 'description', 'preferred_unit']
@@ -43,18 +42,18 @@ TABLE_SCHEMAS = {
     'locations': {
         'table_name': 'locations',
         'columns': [
-            'location_id',  # from 'id' in /locations
-            'name',  # location name
-            'city',  # city name
-            'country',  # country code (e.g., 'AU')
-            'latitude',  # from coordinates
-            'longitude',  # from coordinates
-            'is_mobile',  # boolean
-            'entity',  # e.g., 'Governmental Organization'
-            'is_analysis',  # boolean
-            'sensor_type',  # e.g., 'reference grade'
-            'first_updated',  # timestamp
-            'last_updated'  # timestamp
+            'location_id',
+            'name',
+            'city',
+            'country',
+            'latitude',
+            'longitude',
+            'is_mobile',
+            'entity',
+            'is_analysis',
+            'sensor_type',
+            'first_updated',
+            'last_updated'
         ],
         'key_field': 'location_id',
         'update_fields': ['name', 'city', 'is_mobile', 'entity', 'sensor_type', 'last_updated']
@@ -63,20 +62,20 @@ TABLE_SCHEMAS = {
     'measurements': {
         'table_name': 'measurements',
         'columns': [
-            'measurement_id',  # auto-generated
-            'location_id',  # foreign key to locations
-            'parameter',  # e.g., 'pm25'
-            'value',  # numeric value
-            'unit',  # e.g., 'µg/m³'
-            'timestamp_utc',  # from date.utc
-            'timestamp_local',  # from date.local
-            'latitude',  # measurement location
-            'longitude',  # measurement location
-            'country',  # country code
-            'city'  # city name
+            'measurement_id',
+            'location_id',
+            'parameter',
+            'value',
+            'unit',
+            'timestamp_utc',
+            'timestamp_local',
+            'latitude',
+            'longitude',
+            'country',
+            'city'
         ],
         'key_field': None,
-        'update_fields': []  # measurements are immutable
+        'update_fields': []
     }
 }
 

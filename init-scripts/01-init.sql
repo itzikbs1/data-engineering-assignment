@@ -1,6 +1,6 @@
--- Create server
+-- First create the extension
+CREATE EXTENSION IF NOT EXISTS postgres_fdw;
+
+-- Then create the server
 CREATE SERVER IF NOT EXISTS openaq_server
     FOREIGN DATA WRAPPER postgres_fdw;
-
--- The database openaq_db is already created by Docker Compose
--- through the POSTGRES_DB environment variable
