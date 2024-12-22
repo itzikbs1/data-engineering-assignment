@@ -78,7 +78,7 @@ class OpenAQClient:
 
                 all_results.extend(results)
 
-                if len(results) < self.limit or page > 30:
+                if len(results) < self.limit or page > 50:
                     break
 
                 page += 1
